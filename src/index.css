@@ -1,0 +1,109 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Manrope', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --color-ink: #15151f;
+  --color-ink-soft: #2a2a3a;
+  --color-body: #55556a;
+  --color-muted: #6b6b80;
+  --color-subtle: #7a7a90;
+  --color-faint: #9a9aae;
+  --color-text: #44445a;
+  --color-copy: #5a5a70;
+  --color-line: #ececf4;
+  --color-line-2: #e6e6f0;
+  --color-bg: #eceef4;
+  --color-accent: #8b6cf0;
+  --color-accent-2: #8b7cf6;
+  --color-accent-light: #a78bfa;
+  --color-accent-ring: #ede8fe;
+  --color-accent-deep: #4b36b0;
+  --color-pill: #f1edff;
+  --color-pill-fg: #5b45d6;
+  --color-soft: #f2f3f8;
+  --color-danger: #b3261e;
+  --color-ok-bg: #e6f7ef;
+  --color-ok: #1d7a4f;
+}
+
+/* Base styles live in the base layer so utility classes (text-white etc.) can override them. */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 110px;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background: var(--color-bg);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: #6d5ce8;
+    text-decoration: none;
+  }
+  a:hover {
+    color: #4b3bc4;
+  }
+}
+
+@utility page-bg {
+  min-height: 100vh;
+  background:
+    radial-gradient(900px 600px at 85% 5%, #e4ddfb 0%, transparent 60%),
+    radial-gradient(700px 500px at 5% 45%, #e2e7fb 0%, transparent 60%),
+    radial-gradient(800px 600px at 90% 85%, #ebe3fa 0%, transparent 60%),
+    var(--color-bg);
+}
+
+/* Frosted section panel used across the public site */
+@utility glass-section {
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+}
+
+@utility glass-card {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid #fff;
+}
+
+@utility eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--color-accent-2);
+  text-transform: uppercase;
+}
+
+@utility gradient-text {
+  background: linear-gradient(90deg, #8b6cf0, #a78bfa 45%, #8ea6f5);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility field {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--color-line-2);
+  background: #fff;
+  font-size: 14px;
+  outline: none;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  &:focus {
+    border-color: var(--color-accent-light);
+    box-shadow: 0 0 0 3px var(--color-accent-ring);
+  }
+}
+
+@utility placeholder-stripes {
+  background: repeating-linear-gradient(135deg, #efeafe 0 10px, #e8e3fb 10px 20px);
+}
