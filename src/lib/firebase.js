@@ -15,6 +15,9 @@ const ADMIN_EMAILS = String(env.VITE_ADMIN_EMAILS || '')
   .map((e) => e.trim().toLowerCase())
   .filter(Boolean);
 
+// Used by the "Let's Connect" button: the first admin email.
+export const contactEmail = ADMIN_EMAILS[0] || '';
+
 export const isConfigured = !!firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith('YOUR');
 
 // Firebase SDK is loaded lazily so the demo build (and first paint) stays light.

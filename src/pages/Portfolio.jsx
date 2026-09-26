@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { loadContent, sendMessage } from '../lib/firebase.js';
+import { loadContent, contactEmail } from '../lib/firebase.js';
 import { cleanContent, mergeContent } from '../lib/portfolio-data.js';
 import ImagePlaceholder from '../components/ImagePlaceholder.jsx';
-
-const EMPTY = { name: '', email: '', topic: '', message: '' };
 
 export default function Portfolio() {
   const [content, setContent] = useState(null);
@@ -75,7 +73,7 @@ function Nav({ p }) {
         <a href="#tools" className={link}>Tools</a>
       </div>
       <a
-        href="#contact"
+        href={`mailto:${contactEmail}`}
         className="flex items-center gap-2.5 rounded-full bg-white px-[18px] py-2.5 text-[13px] font-semibold text-ink shadow-[0_2px_10px_rgba(60,60,110,0.08)] hover:text-ink"
       >
         Let's Connect <span className="text-[15px]">↗</span>
@@ -296,36 +294,14 @@ function Tools({ tools, skills }) {
 }
 
 function Contact({ p }) {
-  const [form, setForm] = useState(EMPTY);
-  const [sent, setSent] = useState(false);
-  const [sending, setSending] = useState(false);
-  const [error, setError] = useState('');
-
-  const onField = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
-  const submit = async (e) => {
-    e.preventDefault();
-    setSending(true);
-    setError('');
-    try {
-      await sendMessage(form);
-      setSent(true);
-    } catch (err) {
-      console.error(err);
-      setError('Could not send. Please email me directly.');
-    } finally {
-      setSending(false);
-    }
-  };
-
+  const email = p.email || contactEmail;
   const icon = 'grid h-10 w-10 flex-none place-items-center rounded-xl bg-white text-accent';
   const row = 'flex items-center gap-3.5 text-sm font-medium text-ink hover:text-ink';
-  const input =
-    'rounded-[14px] border border-line bg-white/90 px-4 py-3.5 text-sm text-ink outline-none focus:border-accent-light focus:shadow-[0_0_0_3px_#ede8fe]';
 
   return (
     <section
       id="contact"
-      className="glass-section grid grid-cols-[repeat(auto-fit,minmax(min(100%,340px),1fr))] gap-9 px-6 py-11 backdrop-blur-[20px] sm:px-12"
+      className="glass-section grid grid-cols-[repeat(auto-fit,minmax(min(100%,340px),1fr))] items-center gap-9 px-6 py-11 backdrop-blur-[20px] sm:px-12"
     >
       <div className="flex flex-col gap-[22px]">
         <div className="eyebrow">Let's connect</div>
@@ -333,10 +309,10 @@ function Contact({ p }) {
           {p.contactHeading}
         </h2>
         <div className="mt-1.5 flex flex-col gap-3.5">
-          {p.email && (
-            <a href={`mailto:${p.email}`} className={row}>
+          {email && (
+            <a href={`mailto:${email}`} className={row}>
               <span className={icon}>✉</span>
-              {p.email}
+              {email}
             </a>
           )}
           {p.phone && (
@@ -360,67 +336,21 @@ function Contact({ p }) {
         </div>
       </div>
 
-      <div className="rounded-3xl border border-white bg-white/70 p-6 shadow-[0_14px_40px_rgba(60,60,110,0.07)]">
-        {sent ? (
-          <div className="flex flex-col items-start gap-3 px-2.5 py-[30px]">
-            <div className="grid h-12 w-12 place-items-center rounded-full bg-ok-bg text-[22px] text-ok">✓</div>
-            <div className="text-xl font-bold">Thanks, {form.name}.</div>
-            <div className="text-sm leading-relaxed text-copy">
-              Your message is on its way. I usually reply within one business day.
-            </div>
-            <button
-              onClick={() => {
-                setSent(false);
-                setForm(EMPTY);
-              }}
-              className="mt-2 cursor-pointer rounded-full border border-[#e3e3ee] bg-white px-[18px] py-2.5 text-[13px] font-semibold"
-            >
-              Send another
-            </button>
+      {email && (
+        <div className="flex flex-col items-start gap-4 rounded-3xl border border-white bg-white/70 p-8 shadow-[0_14px_40px_rgba(60,60,110,0.07)]">
+          <div className="grid h-12 w-12 place-items-center rounded-full bg-pill text-[22px] text-accent">✉</div>
+          <div className="text-xl font-bold">Start a conversation</div>
+          <div className="text-sm leading-relaxed text-copy">
+            Roles, contract projects or a process review — send a short note and I usually reply within one business day.
           </div>
-        ) : (
-          <form onSubmit={submit} className="flex flex-col gap-3">
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,180px),1fr))] gap-3">
-              <input name="name" value={form.name} onChange={onField} placeholder="Your name" required maxLength={199} className={input} />
-              <input
-                name="email"
-                type="email"
-                value={form.email}
-                onChange={onField}
-                placeholder="Your email"
-                required
-                maxLength={199}
-                className={input}
-              />
-            </div>
-            <select name="topic" value={form.topic} onChange={onField} className={input}>
-              <option value="">What can I help with?</option>
-              <option value="Full-time role">Full-time role</option>
-              <option value="Contract project">Contract project</option>
-              <option value="Process review">Process review</option>
-              <option value="Something else">Something else</option>
-            </select>
-            <textarea
-              name="message"
-              value={form.message}
-              onChange={onField}
-              placeholder="Your message"
-              rows={5}
-              required
-              maxLength={4999}
-              className={`${input} resize-y`}
-            />
-            {error && <div className="text-[13px] text-danger">{error}</div>}
-            <button
-              type="submit"
-              disabled={sending}
-              className="flex cursor-pointer items-center gap-3 self-start rounded-full border-0 bg-ink px-[30px] py-[15px] text-sm font-semibold text-white shadow-[0_10px_24px_rgba(21,21,31,0.2)] hover:bg-ink-soft disabled:opacity-70"
-            >
-              {sending ? 'Sending…' : 'Send Message'} <span>➤</span>
-            </button>
-          </form>
-        )}
-      </div>
+          <a
+            href={`mailto:${email}`}
+            className="mt-1 flex items-center gap-3 rounded-full bg-ink px-[30px] py-[15px] text-sm font-semibold text-white shadow-[0_10px_24px_rgba(21,21,31,0.2)] hover:bg-ink-soft hover:text-white"
+          >
+            Email me <span>↗</span>
+          </a>
+        </div>
+      )}
     </section>
   );
 }
